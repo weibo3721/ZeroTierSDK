@@ -393,7 +393,7 @@ namespace ZeroTier {
 		// Since picoTCP only allows the reception of frames from within the polling function, we
 		// must enqueue each frame into a memory structure shared by both threads. This structure will
 		Mutex::Lock _l(tap->_pico_frame_rxbuf_m);
-		if(len > ((1024 * 1024) - tap->pico_frame_rxbuf_tot)) {
+		if(len > (unsigned int) ((1024 * 1024) - tap->pico_frame_rxbuf_tot)) {
 			DEBUG_ERROR("dropping packet (len = %d) - not enough space left on RX frame buffer", len);
 			return;
 		}

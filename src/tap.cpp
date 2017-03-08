@@ -426,28 +426,29 @@ void NetconEthernetTap::phyOnUnixData(PhySocket *sock, void **uptr, void *data, 
 			memcpy(&conn->txbuf[conn->txsz], buf, wlen);
 		} else { // Padding found, implies a canary is present
 			// [CANARY]
-			if(len == CANARY_SZ+PADDING_SZ && canary_pos == 0) {
+                        #define PADDED_CANARY_SZ ((ssize_t)(CANARY_SZ+PADDING_SZ))
+			if(len == PADDED_CANARY_SZ && canary_pos == 0) {
 				wlen = 0; // Nothing to write
 			} else {
 				// [CANARY] + [DATA]
-				if(len > CANARY_SZ+PADDING_SZ && canary_pos == 0) {
-					wlen = len - CANARY_SZ+PADDING_SZ;
+				if(len > PADDED_CANARY_SZ && canary_pos == 0) {
+					wlen = len - PADDED_CANARY_SZ;
 					data_start = padding_pos+PADDING_SZ;
 					memcpy((&conn->txbuf)+conn->txsz, buf+data_start, wlen);
 				}
 				// [DATA] + [CANARY]
-				if(len > CANARY_SZ+PADDING_SZ && canary_pos > 0 && canary_pos == len - CANARY_SZ+PADDING_SZ) {
-					wlen = len - CANARY_SZ+PADDING_SZ;
+				if(len > PADDED_CANARY_SZ && canary_pos > 0 && canary_pos == len - PADDED_CANARY_SZ) {
+					wlen = len - PADDED_CANARY_SZ;
 					data_start = 0;
 					memcpy((&conn->txbuf)+conn->txsz, buf+data_start, wlen);												
 				}
 				// [DATA] + [CANARY] + [DATA]
-				if(len > CANARY_SZ+PADDING_SZ && canary_pos > 0 && len > (canary_pos + CANARY_SZ+PADDING_SZ)) {
-					wlen = len - CANARY_SZ+PADDING_SZ;
+				if(len > PADDED_CANARY_SZ && canary_pos > 0 && len > (canary_pos + PADDED_CANARY_SZ)) {
+					wlen = len - PADDED_CANARY_SZ;
 					data_start = 0;
 					data_end = padding_pos-CANARY_SZ;
 					memcpy((&conn->txbuf)+conn->txsz, buf+data_start, (data_end-data_start)+1);
-					memcpy((&conn->txbuf)+conn->txsz, buf+(padding_pos+PADDING_SZ), len-(canary_pos+CANARY_SZ+PADDING_SZ));
+					memcpy((&conn->txbuf)+conn->txsz, buf+(padding_pos+PADDING_SZ), len-(canary_pos+PADDED_CANARY_SZ));
 				}
 			}
 		}

@@ -1054,7 +1054,9 @@ int main(int argc,char **argv)
 
 	std::string homeDir;
 	unsigned int port = ZT_DEFAULT_PORT;
+#if defined(__WINDOWS__) || (defined(__UNIX_LIKE__) && !defined(ZT_ONE_NO_ROOT_CHECK))
 	bool skipRootCheck = false;
+#endif // defined(__WINDOWS__) || (defined(__UNIX_LIKE__) && !defined(ZT_ONE_NO_ROOT_CHECK))
 
 	for(int i=1;i<argc;++i) {
 		if (argv[i][0] == '-') {
@@ -1075,7 +1077,9 @@ int main(int argc,char **argv)
 #endif // __UNIX_LIKE__
 
 				case 'U':
+#if defined(__WINDOWS__) || (defined(__UNIX_LIKE__) && !defined(ZT_ONE_NO_ROOT_CHECK))
 					skipRootCheck = true;
+#endif // defined(__WINDOWS__) || (defined(__UNIX_LIKE__) && !defined(ZT_ONE_NO_ROOT_CHECK))
 					break;
 
 				case 'v': // Display version

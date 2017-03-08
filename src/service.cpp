@@ -49,7 +49,6 @@
 #include "tap.hpp"
 #include "sdk.h"
 #include "debug.h"
-#include "build.h"
 
 std::string service_path;
 pthread_t intercept_thread;
@@ -181,7 +180,7 @@ void zts_get_ipv4_address(const char *nwid, char *addrstr)
     uint64_t nwid_int = strtoull(nwid, NULL, 16);
     ZeroTier::NetconEthernetTap *tap = zt1Service->getTap(nwid_int);
     if(tap && tap->_ips.size()){ 
-        for(int i=0; i<tap->_ips.size(); i++) {
+        for(std::size_t i=0; i<tap->_ips.size(); i++) {
             if(tap->_ips[i].isV4()) {
                 std::string addr = tap->_ips[i].toString();
                 // DEBUG_EXTRA("addr=%s, addrlen=%d", addr.c_str(), addr.length());
@@ -200,7 +199,7 @@ void zts_get_ipv6_address(const char *nwid, char *addrstr)
     uint64_t nwid_int = strtoull(nwid, NULL, 16);
     ZeroTier::NetconEthernetTap *tap = zt1Service->getTap(nwid_int);
     if(tap && tap->_ips.size()){ 
-        for(int i=0; i<tap->_ips.size(); i++) {
+        for(std::size_t i=0; i<tap->_ips.size(); i++) {
             if(tap->_ips[i].isV6()) {
                 std::string addr = tap->_ips[i].toString();
                 // DEBUG_EXTRA("addr=%s, addrlen=%d", addr.c_str(), addr.length());
@@ -443,7 +442,9 @@ void *zts_start_core_service(void *thread_id) {
             homeDir = std::string((char*)thread_id);
     #endif
 
+    #if defined(__IOS__) || defined(__UNITY_3D__)
     char current_dir[MAX_DIR_SZ];
+    #endif
 
     //#if defined(SDK_BUNDLED) && !defined(__ANDROID__)
     //    set_intercept_status(INTERCEPT_DISABLED); // Ignore network calls from ZT service

@@ -238,7 +238,7 @@ int (*realclose)(CLOSE_SIG);
             size_t tot_len = 0;
             size_t err;
             struct iovec * iov = msg->msg_iov;
-            for(int i=0; i<msg->msg_iovlen; ++i)
+            for(size_t i=0; i<msg->msg_iovlen; ++i)
                 tot_len += iov[i].iov_len;
             if(tot_len > ZT_UDP_DEFAULT_PAYLOAD_MTU) {
                 errno = EMSGSIZE; // Message too large to send atomically via underlying protocol, don't send
@@ -250,7 +250,7 @@ int (*realclose)(CLOSE_SIG);
                 return -1;
             }
             p = buf;
-            for(int i=0; i < msg->msg_iovlen; ++i) {
+            for(size_t i=0; i < msg->msg_iovlen; ++i) {
                 memcpy(p, iov[i].iov_base, iov[i].iov_len);
                 p += iov[i].iov_len;
             }
@@ -338,7 +338,7 @@ int (*realclose)(CLOSE_SIG);
             char *buf, *p;
             struct iovec *iov = msg->msg_iov;
             
-            for(int i = 0; i < msg->msg_iovlen; ++i)
+            for(size_t i = 0; i < msg->msg_iovlen; ++i)
                 tot_len += iov[i].iov_len;
             buf = (char *)malloc(tot_len);
             if(tot_len != 0 && buf == NULL) {
@@ -357,13 +357,13 @@ int (*realclose)(CLOSE_SIG);
             p = buf;
             
             // According to: http://pubs.opengroup.org/onlinepubs/009695399/functions/recvmsg.html
-            if(err > msg->msg_controllen && !( msg->msg_flags & MSG_PEEK)) {
+            if(err > (ssize_t) (msg->msg_controllen) && !( msg->msg_flags & MSG_PEEK)) {
                 // excess data should be disgarded
                 msg->msg_flags |= MSG_TRUNC; // Indicate that the buffer has been truncated
             }
             
             while (n > 0) {
-                ssize_t count = n < iov->iov_len ? n : iov->iov_len;
+                ssize_t count = n < (ssize_t) (iov->iov_len) ? n : iov->iov_len;
                 memcpy (iov->iov_base, p, count);
                 p += count;
                 n -= count;
@@ -746,7 +746,7 @@ int (*realclose)(CLOSE_SIG);
             close(rpcfd);
             if(err > 0) {
                 int sum=0;
-                for(int i=0;i<sizeof(struct sockaddr_storage);i++) {
+                for(size_t i=0;i<sizeof(struct sockaddr_storage);i++) {
                     sum|=addrbuf[i];
                 }
                 if(!sum) { // RXed a zero-ed address buffer, currently the only way to signal a problem
@@ -809,7 +809,7 @@ int (*realclose)(CLOSE_SIG);
             close(rpcfd);
             if(err > 0) {
                 int sum=0;
-                for(int i=0;i<sizeof(struct sockaddr_storage);i++) {
+                for(size_t i=0;i<sizeof(struct sockaddr_storage);i++) {
                     sum|=addrbuf[i];
                 }
                 if(!sum) { // RXed a zero-ed address buffer, currently the only way to signal a problem

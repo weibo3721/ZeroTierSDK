@@ -270,13 +270,15 @@ ssize_t sock_fd_write(int sock, int fd)
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
   if (fd != -1) {
+      void *cmsg_data;
       msg.msg_control = cmsgu.control;
       msg.msg_controllen = sizeof(cmsgu.control);
       cmsg = CMSG_FIRSTHDR(&msg);
       cmsg->cmsg_len = CMSG_LEN(sizeof (int));
       cmsg->cmsg_level = SOL_SOCKET;
       cmsg->cmsg_type = SCM_RIGHTS;
-      *((int *) CMSG_DATA(cmsg)) = fd;
+      cmsg_data = (void *) CMSG_DATA(cmsg);
+      *((int *)(cmsg_data)) = fd;
   } else {
       msg.msg_control = NULL;
       msg.msg_controllen = 0;
@@ -316,6 +318,7 @@ ssize_t sock_fd_read(int sock, void *buf, ssize_t bufsize, int *fd)
       return -1;
     cmsg = CMSG_FIRSTHDR(&msg);
     if (cmsg && cmsg->cmsg_len == CMSG_LEN(sizeof(int))) {
+      void *cmsg_data;
       if (cmsg->cmsg_level != SOL_SOCKET) {
          DEBUG_ERROR("invalid cmsg_level %d",cmsg->cmsg_level);
         return -1;
@@ -324,7 +327,8 @@ ssize_t sock_fd_read(int sock, void *buf, ssize_t bufsize, int *fd)
            DEBUG_ERROR("invalid cmsg_type %d",cmsg->cmsg_type);
           return -1;
       }
-      *fd = *((int *) CMSG_DATA(cmsg));
+      cmsg_data = CMSG_DATA(cmsg);
+      *fd = *((int *) cmsg_data);
     } else {
 *fd = -1;}
   } else {
