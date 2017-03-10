@@ -174,10 +174,10 @@ int64_t OSUtils::getFileSize(const char *path)
 std::vector<InetAddress> OSUtils::resolve(const char *name)
 {
 	std::vector<InetAddress> r;
+	/*
 	std::vector<InetAddress>::iterator i;
 	InetAddress tmp;
 	struct addrinfo *ai = (struct addrinfo *)0,*p;
-	/*
 	if (!getaddrinfo(name,(const char *)0,(const struct addrinfo *)0,&ai)) {
 		try {
 			p = ai;
