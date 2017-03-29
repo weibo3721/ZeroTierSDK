@@ -393,7 +393,11 @@ void NetconEthernetTap::phyOnUnixData(PhySocket *sock, void **uptr, void *data, 
 			jobmap[CANARY_num] = std::pair<PhySocket*, void*>(sock, tmpbuf);
 			
 		}
+#if 0
 		int nwrit = write(_phy.getDescriptor(sock), "z", 1); // RPC ACK byte to maintain order
+#else  /* 0 */
+		write(_phy.getDescriptor(sock), "z", 1); // RPC ACK byte to maintain order
+#endif /* 0 */
 	}
 	// STREAM
 	else {

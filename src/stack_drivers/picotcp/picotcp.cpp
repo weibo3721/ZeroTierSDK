@@ -247,9 +247,11 @@ namespace ZeroTier {
             if(sz)
                 memmove(&conn->txbuf, (conn->txbuf+r), sz);
             conn->txsz -= r;
+#if DEBUG_LEVEL >= MSG_TRANSFER
             int max = conn->type == SOCK_STREAM ? DEFAULT_TCP_TX_BUF_SZ : DEFAULT_UDP_TX_BUF_SZ;
             DEBUG_TRANS("[TCP TX] --->    :: {TX: %.3f%%, RX: %.3f%%, physock=%p} :: %d bytes",
                 (float)conn->txsz / (float)max, (float)conn->rxsz / max, conn->sock, r);
+#endif /* DEBUG_LEVEL >= MSG_TRANSFER */
             return;
 		}
 	}
@@ -678,7 +680,7 @@ namespace ZeroTier {
 		
 		Connection *conn = picotap->getConnection(sock);
 		if(conn && conn->rxsz) {
-			float max = conn->type == SOCK_STREAM ? (float)DEFAULT_TCP_RX_BUF_SZ : (float)DEFAULT_UDP_RX_BUF_SZ;
+			//float max = conn->type == SOCK_STREAM ? (float)DEFAULT_TCP_RX_BUF_SZ : (float)DEFAULT_UDP_RX_BUF_SZ;
 			
 			if(conn->type==SOCK_DGRAM) {
 				//DEBUG_ERROR(" [ ZTSOCK <- RXBUF] attempting write, RXBUF(%d)", conn->rxsz);

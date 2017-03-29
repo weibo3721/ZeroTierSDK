@@ -237,7 +237,7 @@ void zts_get_ipv6_address(const char *nwid, char *addrstr)
 int zts_get_device_id(char *devID) { 
     if(zt1Service) {
         char id[10];
-        sprintf(id, "%llx",zt1Service->getNode()->address());
+        sprintf(id, "%llx",(unsigned long long)zt1Service->getNode()->address());
         memcpy(devID, id, 10);
         return 0;
     }

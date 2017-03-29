@@ -214,8 +214,10 @@ namespace ZeroTier
 		{
 			if(len >= 3)
 			{
+#if DEBUG_LEVEL >= MSG_INFO
 				int version = buf[IDX_VERSION];
 				int methodsLength = buf[IDX_NMETHODS];
+#endif /* DEBUG_LEVEL >= MSG_INFO */
 				int firstSupportedMethod = buf[IDX_METHODS];
 				int supportedMethod = 0;
 
@@ -252,7 +254,9 @@ namespace ZeroTier
 			// Ex. 4(meta) + 4(ipv4) + 2(port) = 10
 			if(len >= 10)
 			{
+#if DEBUG_LEVEL >= MSG_INFO
 				int version = buf[IDX_VERSION];
+#endif /* DEBUG_LEVEL >= MSG_INFO */
 				int cmd = buf[IDX_COMMAND];
 				int addr_type = buf[IDX_ATYP];
 
