@@ -665,7 +665,7 @@ unsigned int EmbeddedNetworkController::handleControlPlaneHttpPOST(
 								// Member is being de-authorized, so spray Revocation objects to all online members
 								if (!newAuth) {
 									_clearNetworkMemberInfoCache(nwid);
-									Revocation rev(_node->prng(),nwid,0,now,ZT_REVOCATION_FLAG_FAST_PROPAGATE,Address(address),Revocation::CREDENTIAL_TYPE_COM);
+									Revocation rev((uint32_t)_node->prng(),nwid,0,now,ZT_REVOCATION_FLAG_FAST_PROPAGATE,Address(address),Revocation::CREDENTIAL_TYPE_COM);
 									rev.sign(_signingId);
 									Mutex::Lock _l(_lastRequestTime_m);
 									for(std::map< std::pair<uint64_t,uint64_t>,uint64_t >::iterator i(_lastRequestTime.begin());i!=_lastRequestTime.end();++i) {
@@ -1018,9 +1018,10 @@ unsigned int EmbeddedNetworkController::handleControlPlaneHttpPOST(
 									json ntag = json::object();
 									const uint64_t tagId = OSUtils::jsonInt(tag["id"],0ULL);
 									ntag["id"] = tagId;
-									if (tag.find("default") == tag.end())
-										ntag["default"] = json();
-									else ntag["default"] = OSUtils::jsonInt(tag["default"],0ULL);
+									json &dfl = tag["default"];
+									if (dfl.is_null())
+										ntag["default"] = dfl;
+									else ntag["default"] = OSUtils::jsonInt(dfl,0ULL);
 									ntags[tagId] = ntag;
 								}
 							}
@@ -1068,13 +1069,17 @@ unsigned int EmbeddedNetworkController::handleControlPlaneHttpPOST(
 
 		} // else 404
 
-	} else if (path[0] == "dbtest") {
+	} else if (path[0] == "ping") {
 
 		json testRec;
 		const uint64_t now = OSUtils::now();
 		testRec["clock"] = now;
 		testRec["uptime"] = (now - _startTime);
-		_db.put("dbtest",testRec);
+		testRec["content"] = b;
+		responseBody = OSUtils::jsonDump(testRec);
+		_db.writeRaw("pong",responseBody);
+		responseContentType = "application/json";
+		return 200;
 
 	}
 

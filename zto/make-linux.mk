@@ -105,6 +105,12 @@ endif
 ifeq ($(CC_MACH),armv6)
         ZT_ARCHITECTURE=3
 endif
+ifeq ($(CC_MACH),armv6zk)
+        ZT_ARCHITECTURE=3
+endif
+ifeq ($(CC_MACH),armv6kz)
+        ZT_ARCHITECTURE=3
+endif
 ifeq ($(CC_MACH),armv7)
         ZT_ARCHITECTURE=3
 endif
@@ -116,16 +122,26 @@ ifeq ($(CC_MACH),aarch64)
 endif
 DEFS+=-DZT_BUILD_PLATFORM=1 -DZT_BUILD_ARCHITECTURE=$(ZT_ARCHITECTURE) -DZT_SOFTWARE_UPDATE_DEFAULT="\"disable\""
 
-# Define some conservative CPU instruction set flags for arm32 since there's a ton of variation out there
+# Ensure no unaligned access on ARM targets
 ifeq ($(ZT_ARCHITECTURE),3)
-	override CFLAGS+=-march=armv6zk -mcpu=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp
-	override CXXFLAGS+=-march=armv6zk -mcpu=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+endif
+ifeq ($(ZT_ARCHITECTURE),4)
 	override DEFS+=-DZT_NO_TYPE_PUNNING
 endif
 
-# Define this to build a static binary, which is needed to make this runnable on a few ancient Linux distros
+# Static builds, which are currently done for a number of Linux targets
 ifeq ($(ZT_STATIC),1)
 	override LDFLAGS+=-static
+	ifeq ($(ZT_ARCHITECTURE),3)
+		ifeq ($(ZT_ARM_SOFTFLOAT),1)
+			override CFLAGS+=-march=armv5te -mfloat-abi=soft -msoft-float -mno-unaligned-access -marm
+			override CXXFLAGS+=-march=armv5te -mfloat-abi=soft -msoft-float -mno-unaligned-access -marm
+		else
+			override CFLAGS+=-march=armv6kz -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mno-unaligned-access -marm
+			override CXXFLAGS+=-march=armv6kz -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mno-unaligned-access -marm
+		endif
+	endif
 endif
 
 all:	one
