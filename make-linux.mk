@@ -26,7 +26,11 @@ endif
 INCLUDES=
 DEFS=
 ARCH_FLAGS=-arch x86_64
-CFLAGS=
+ifeq ($(ZT_DEBUG),1)
+	CFLAGS=-O0
+else
+	CFLAGS=-O3
+endif
 CXXFLAGS=$(CFLAGS) -Wno-format -fno-rtti -std=c++11 -DZT_SDK
 
 include objects.mk
