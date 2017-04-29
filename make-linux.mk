@@ -93,6 +93,11 @@ PRODUCTSIGN=echo
 CODESIGN_APP_CERT=
 CODESIGN_INSTALLER_CERT=
 
+# Enable trace from ZeroTier code
+ifeq ($(ZT_TRACE),1)
+	DEFS+=-DZT_TRACE
+endif
+
 # Debug output for ZeroTier service
 ifeq ($(ZT_DEBUG),1)
 	DEFS+=-DZT_TRACE
