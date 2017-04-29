@@ -94,9 +94,6 @@ CODESIGN_APP_CERT=
 CODESIGN_INSTALLER_CERT=
 
 # Enable trace from ZeroTier code
-ifeq ($(ZT_TRACE),1)
-	DEFS+=-DZT_TRACE
-endif
 
 # Debug output for ZeroTier service
 ifeq ($(ZT_DEBUG),1)
@@ -109,6 +106,9 @@ ifeq ($(ZT_DEBUG),1)
 	# C25519 in particular is almost UNUSABLE in -O0 even on a 3ghz box!
 ext/lz4/lz4.o node/Salsa20.o node/SHA512.o node/C25519.o node/Poly1305.o: CFLAGS = -Wall -O2 -g -pthread $(INCLUDES) $(DEFS)
 else
+	ifeq ($(ZT_TRACE),1)
+		DEFS+=-DZT_TRACE
+	endif
 	CFLAGS?=-O3 -fstack-protector
 	CFLAGS+=-Wall -Werror -fPIE -fvisibility=hidden -pthread $(INCLUDES) -DNDEBUG $(DEFS)
 	CXXFLAGS?= -fstack-protector
