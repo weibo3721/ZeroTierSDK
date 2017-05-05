@@ -26,7 +26,11 @@ endif
 INCLUDES=
 DEFS=
 ARCH_FLAGS=-arch x86_64
-CFLAGS=
+ifeq ($(ZT_DEBUG),1)
+	CFLAGS=-O0
+else
+	CFLAGS=-O3
+endif
 CXXFLAGS=$(CFLAGS) -Wno-format -fno-rtti -std=c++11 -DZT_SDK
 
 include objects.mk
@@ -89,6 +93,8 @@ PRODUCTSIGN=echo
 CODESIGN_APP_CERT=
 CODESIGN_INSTALLER_CERT=
 
+# Enable trace from ZeroTier code
+
 # Debug output for ZeroTier service
 ifeq ($(ZT_DEBUG),1)
 	DEFS+=-DZT_TRACE
@@ -100,6 +106,9 @@ ifeq ($(ZT_DEBUG),1)
 	# C25519 in particular is almost UNUSABLE in -O0 even on a 3ghz box!
 ext/lz4/lz4.o node/Salsa20.o node/SHA512.o node/C25519.o node/Poly1305.o: CFLAGS = -Wall -O2 -g -pthread $(INCLUDES) $(DEFS)
 else
+	ifeq ($(ZT_TRACE),1)
+		DEFS+=-DZT_TRACE
+	endif
 	CFLAGS?=-O3 -fstack-protector
 	CFLAGS+=-Wall -Werror -fPIE -fvisibility=hidden -pthread $(INCLUDES) -DNDEBUG $(DEFS)
 	CXXFLAGS?= -fstack-protector
