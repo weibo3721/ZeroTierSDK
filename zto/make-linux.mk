@@ -8,7 +8,7 @@ ifeq ($(origin CXX),default)
 endif
 
 INCLUDES?=
-DEFS?=-D_FORTIFY_SOURCE=2
+DEFS?=
 LDLIBS?=
 DESTDIR?=
 
@@ -54,15 +54,16 @@ ifeq ($(ZT_RULES_ENGINE_DEBUGGING),1)
 endif
 
 ifeq ($(ZT_DEBUG),1)
-	DEFS+=-DZT_TRACE
-	override CFLAGS+=-Wall -g -O -pthread $(INCLUDES) $(DEFS)
-	override CXXFLAGS+=-Wall -g -O -std=c++11 -pthread $(INCLUDES) $(DEFS)
+	override DEFS+=-DZT_TRACE
+	override CFLAGS+=-Wall -g -pthread $(INCLUDES) $(DEFS)
+	override CXXFLAGS+=-Wall -g -std=c++11 -pthread $(INCLUDES) $(DEFS)
 	override LDFLAGS+=
 	STRIP?=echo
 	# The following line enables optimization for the crypto code, since
 	# C25519 in particular is almost UNUSABLE in -O0 even on a 3ghz box!
-node/Salsa20.o node/SHA512.o node/C25519.o node/Poly1305.o: CFLAGS = -Wall -O2 -g -pthread $(INCLUDES) $(DEFS)
+node/Salsa20.o node/SHA512.o node/C25519.o node/Poly1305.o: CXXFLAGS=-Wall -O2 -g -pthread $(INCLUDES) $(DEFS)
 else
+	override DEFS+=-D_FORTIFY_SOURCE=2
 	CFLAGS?=-O3 -fstack-protector
 	override CFLAGS+=-Wall -fPIE -pthread $(INCLUDES) -DNDEBUG $(DEFS)
 	CXXFLAGS?=-O3 -fstack-protector
@@ -70,6 +71,10 @@ else
 	override LDFLAGS+=-pie -Wl,-z,relro,-z,now
 	STRIP?=strip
 	STRIP+=--strip-all
+endif
+
+ifeq ($(ZT_USE_TEST_TAP),1)
+	override DEFS+=-DZT_USE_TEST_TAP
 endif
 
 # Uncomment for gprof profile build
@@ -80,71 +85,131 @@ endif
 
 # Determine system build architecture from compiler target
 CC_MACH=$(shell $(CC) -dumpmachine | cut -d '-' -f 1)
-ZT_ARCHITECTURE=0
+ZT_ARCHITECTURE=999
 ifeq ($(CC_MACH),x86_64)
-        ZT_ARCHITECTURE=2
+	ZT_ARCHITECTURE=2
+	ZT_USE_X64_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),amd64)
-        ZT_ARCHITECTURE=2
+	ZT_ARCHITECTURE=2
+	ZT_USE_X64_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),i386)
-        ZT_ARCHITECTURE=1
+	ZT_ARCHITECTURE=1
+endif
+ifeq ($(CC_MACH),i486)
+	ZT_ARCHITECTURE=1
+endif
+ifeq ($(CC_MACH),i586)
+	ZT_ARCHITECTURE=1
 endif
 ifeq ($(CC_MACH),i686)
-        ZT_ARCHITECTURE=1
+	ZT_ARCHITECTURE=1
 endif
 ifeq ($(CC_MACH),arm)
-        ZT_ARCHITECTURE=3
+	ZT_ARCHITECTURE=3
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+	ZT_USE_ARM32_NEON_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),armel)
-        ZT_ARCHITECTURE=3
+	ZT_ARCHITECTURE=3
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+	ZT_USE_ARM32_NEON_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),armhf)
-        ZT_ARCHITECTURE=3
+	ZT_ARCHITECTURE=3
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+	ZT_USE_ARM32_NEON_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),armv6)
-        ZT_ARCHITECTURE=3
+	ZT_ARCHITECTURE=3
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+	ZT_USE_ARM32_NEON_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),armv6zk)
-        ZT_ARCHITECTURE=3
+	ZT_ARCHITECTURE=3
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+	ZT_USE_ARM32_NEON_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),armv6kz)
-        ZT_ARCHITECTURE=3
+	ZT_ARCHITECTURE=3
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+	ZT_USE_ARM32_NEON_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),armv7)
-        ZT_ARCHITECTURE=3
+	ZT_ARCHITECTURE=3
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+	ZT_USE_ARM32_NEON_ASM_SALSA2012=1
 endif
 ifeq ($(CC_MACH),arm64)
-        ZT_ARCHITECTURE=4
+	ZT_ARCHITECTURE=4
+	override DEFS+=-DZT_NO_TYPE_PUNNING
 endif
 ifeq ($(CC_MACH),aarch64)
-        ZT_ARCHITECTURE=4
+	ZT_ARCHITECTURE=4
+	override DEFS+=-DZT_NO_TYPE_PUNNING
 endif
-DEFS+=-DZT_BUILD_PLATFORM=1 -DZT_BUILD_ARCHITECTURE=$(ZT_ARCHITECTURE) -DZT_SOFTWARE_UPDATE_DEFAULT="\"disable\""
+ifeq ($(CC_MACH),mipsel)
+	ZT_ARCHITECTURE=5
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+endif
+ifeq ($(CC_MACH),mips)
+	ZT_ARCHITECTURE=5
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+endif
+ifeq ($(CC_MACH),mips64)
+	ZT_ARCHITECTURE=6
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+endif
+ifeq ($(CC_MACH),mips64el)
+	ZT_ARCHITECTURE=6
+	override DEFS+=-DZT_NO_TYPE_PUNNING
+endif
 
-# Ensure no unaligned access on ARM targets
-ifeq ($(ZT_ARCHITECTURE),3)
-	override DEFS+=-DZT_NO_TYPE_PUNNING
+# Fail if system architecture could not be determined
+ifeq ($(ZT_ARCHITECTURE),999)
+ERR=$(error FATAL: architecture could not be determined from $(CC) -dumpmachine: $CC_MACH)
+.PHONY: err
+err: ; $(ERR)
 endif
-ifeq ($(ZT_ARCHITECTURE),4)
-	override DEFS+=-DZT_NO_TYPE_PUNNING
-endif
+
+# Disable software updates by default on Linux since that is normally done with package management
+override DEFS+=-DZT_BUILD_PLATFORM=1 -DZT_BUILD_ARCHITECTURE=$(ZT_ARCHITECTURE) -DZT_SOFTWARE_UPDATE_DEFAULT="\"disable\""
 
 # Static builds, which are currently done for a number of Linux targets
 ifeq ($(ZT_STATIC),1)
 	override LDFLAGS+=-static
-	ifeq ($(ZT_ARCHITECTURE),3)
-		ifeq ($(ZT_ARM_SOFTFLOAT),1)
-			override CFLAGS+=-march=armv5te -mfloat-abi=soft -msoft-float -mno-unaligned-access -marm
-			override CXXFLAGS+=-march=armv5te -mfloat-abi=soft -msoft-float -mno-unaligned-access -marm
-		else
-			override CFLAGS+=-march=armv6kz -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mno-unaligned-access -marm
-			override CXXFLAGS+=-march=armv6kz -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mno-unaligned-access -marm
-		endif
+endif
+
+# ARM32 hell -- use conservative CFLAGS
+ifeq ($(ZT_ARCHITECTURE),3)
+	ifeq ($(shell if [ -e /usr/bin/dpkg ]; then dpkg --print-architecture; fi),armel)
+		override CFLAGS+=-march=armv5 -mfloat-abi=soft -msoft-float -mno-unaligned-access -marm
+		override CXXFLAGS+=-march=armv5 -mfloat-abi=soft -msoft-float -mno-unaligned-access -marm
+		ZT_USE_ARM32_NEON_ASM_SALSA2012=0
+	else
+		override CFLAGS+=-march=armv5 -mno-unaligned-access -marm
+		override CXXFLAGS+=-march=armv5 -mno-unaligned-access -marm
 	endif
 endif
 
+# Build faster crypto on some targets
+ifeq ($(ZT_USE_X64_ASM_SALSA2012),1)
+	override DEFS+=-DZT_USE_X64_ASM_SALSA2012
+	override OBJS+=ext/x64-salsa2012-asm/salsa2012.o
+endif
+ifeq ($(ZT_USE_ARM32_NEON_ASM_SALSA2012),1)
+	override DEFS+=-DZT_USE_ARM32_NEON_ASM_SALSA2012
+	override OBJS+=ext/arm32-neon-salsa2012-asm/salsa2012.o
+endif
+
 all:	one
+
+ext/x64-salsa2012-asm/salsa2012.o:
+	$(CC) $(CFLAGS) -c ext/x64-salsa2012-asm/salsa2012.s -o ext/x64-salsa2012-asm/salsa2012.o
+
+ext/arm32-neon-salsa2012-asm/salsa2012.o:
+	$(CC) $(CFLAGS) -c ext/arm32-neon-salsa2012-asm/salsa2012.s -o ext/arm32-neon-salsa2012-asm/salsa2012.o
 
 one:	$(OBJS) service/OneService.o one.o osdep/LinuxEthernetTap.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o zerotier-one $(OBJS) service/OneService.o one.o osdep/LinuxEthernetTap.o $(LDLIBS)

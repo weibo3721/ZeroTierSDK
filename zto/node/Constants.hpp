@@ -1,6 +1,6 @@
 /*
  * ZeroTier One - Network Virtualization Everywhere
- * Copyright (C) 2011-2016  ZeroTier, Inc.  https://www.zerotier.com/
+ * Copyright (C) 2011-2017  ZeroTier, Inc.  https://www.zerotier.com/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * --
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial closed-source software that incorporates or links
+ * directly against ZeroTier software without disclosing the source code
+ * of your own application.
  */
 
 #ifndef ZT_CONSTANTS_HPP
@@ -151,15 +159,12 @@
 /**
  * Default MTU used for Ethernet tap device
  */
-#define ZT_IF_MTU ZT_MAX_MTU
+#define ZT_DEFAULT_MTU 2800
 
 /**
- * Maximum number of packet fragments we'll support
- *
- * The actual spec allows 16, but this is the most we'll support right
- * now. Packets with more than this many fragments are dropped.
+ * Maximum number of packet fragments we'll support (protocol max: 16)
  */
-#define ZT_MAX_PACKET_FRAGMENTS 4
+#define ZT_MAX_PACKET_FRAGMENTS 7
 
 /**
  * Size of RX queue
@@ -289,7 +294,7 @@
 #define ZT_PEER_PING_PERIOD 60000
 
 /**
- * Paths are considered expired if they have not produced a real packet in this long
+ * Paths are considered expired if they have not sent us a real packet in this long
  */
 #define ZT_PEER_PATH_EXPIRATION ((ZT_PEER_PING_PERIOD * 4) + 3000)
 

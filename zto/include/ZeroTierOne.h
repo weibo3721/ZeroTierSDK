@@ -1,6 +1,6 @@
 /*
  * ZeroTier One - Network Virtualization Everywhere
- * Copyright (C) 2011-2016  ZeroTier, Inc.  https://www.zerotier.com/
+ * Copyright (C) 2011-2017  ZeroTier, Inc.  https://www.zerotier.com/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * --
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial closed-source software that incorporates or links
+ * directly against ZeroTier software without disclosing the source code
+ * of your own application.
  */
 
 /*
@@ -52,29 +60,14 @@ extern "C" {
 #define ZT_DEFAULT_PORT 9993
 
 /**
- * Maximum MTU for ZeroTier virtual networks
- *
- * This is pretty much an unchangeable global constant. To make it change
- * across nodes would require logic to send ICMP packet too big messages,
- * which would complicate things. 1500 has been good enough on most LANs
- * for ages, so a larger MTU should be fine for the forseeable future. This
- * typically results in two UDP packets per single large frame. Experimental
- * results seem to show that this is good. Larger MTUs resulting in more
- * fragments seemed too brittle on slow/crummy links for no benefit.
- *
- * If this does change, also change it in tap.h in the tuntaposx code under
- * mac-tap.
- *
- * Overhead for a normal frame split into two packets:
- *
- * 1414 = 1444 (typical UDP MTU) - 28 (packet header) - 2 (ethertype)
- * 1428 = 1444 (typical UDP MTU) - 16 (fragment header)
- * SUM: 2842
- *
- * We use 2800, which leaves some room for other payload in other types of
- * messages such as multicast propagation or future support for bridging.
+ * Minimum MTU, which is the minimum allowed by IPv6 and several specs
  */
-#define ZT_MAX_MTU 2800
+#define ZT_MIN_MTU 1280
+
+/**
+ * Maximum MTU for ZeroTier virtual networks
+ */
+#define ZT_MAX_MTU 10000
 
 /**
  * Maximum length of network short name
