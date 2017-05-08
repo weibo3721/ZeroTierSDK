@@ -1,6 +1,6 @@
 /*
  * ZeroTier One - Network Virtualization Everywhere
- * Copyright (C) 2011-2016  ZeroTier, Inc.  https://www.zerotier.com/
+ * Copyright (C) 2011-2017  ZeroTier, Inc.  https://www.zerotier.com/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * --
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial closed-source software that incorporates or links
+ * directly against ZeroTier software without disclosing the source code
+ * of your own application.
  */
 
 #ifndef ZT_ONESERVICE_HPP
@@ -23,17 +31,15 @@
 #include <vector>
 
 #include "../node/InetAddress.hpp"
-#include "../node/Node.hpp"
- 
-// Include the right tap device driver for this platform -- add new platforms here
+
 #ifdef ZT_SDK
-	// In network containers builds, use the virtual netcon endpoint instead of a tun/tap port driver
+ 	#include "../node/Node.hpp"
+	// Use the virtual netcon endpoint instead of a tun/tap port driver
 	#include "../src/tap.hpp"
 	namespace ZeroTier { typedef NetconEthernetTap EthernetTap; }
-#endif // not ZT_SDK so pick a tap driver
+#endif
 
 namespace ZeroTier {
-
 
 /**
  * Local service for ZeroTier One as system VPN/NFV provider
@@ -140,11 +146,6 @@ public:
 	 */
 	virtual std::string portDeviceName(uint64_t nwid) const = 0;
 
-	/**
-	 * Terminate background service (can be called from other threads)
-	 */
-	virtual void terminate() = 0;
-
 #ifdef ZT_SDK
 	/**
      * Leaves a network
@@ -158,20 +159,34 @@ public:
 
     /**
      * Returns the homePath given by the client application
-     * - Used for SDK mode
      */
     virtual std::string givenHomePath() = 0;
 
 	/*
-	 *
+	 * Returns a NetconEthernetTap that is associated with the given nwid
 	 */
     virtual EthernetTap * getTap(uint64_t nwid) = 0;
 
 	/*
-	 *
+	 * Returns a NetconEthernetTap that cant function as a route to the specified host
+	 */
+    virtual EthernetTap * getTap(InetAddress &addr) = 0;
+
+	/*
+	 * Returns a pointer to the Node
 	 */
 	virtual Node * getNode() = 0;
+
+	/*
+	 * Delete all NetconEthernetTap interfaces
+	 */
+	virtual void removeNets() = 0;
 #endif
+	
+	/**
+	 * Terminate background service (can be called from other threads)
+	 */
+	virtual void terminate() = 0;
 
 	/**
 	 * Get local settings for a network

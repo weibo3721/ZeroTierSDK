@@ -186,6 +186,9 @@ namespace ZeroTier {
             picoTCP_stack *picostack;
         #endif
 
+
+        void setMtu(unsigned int mtu);
+
 		/*
 		 * Handles an RPC to bind an LWIP PCB to a given address and port
 		 *
@@ -332,7 +335,7 @@ namespace ZeroTier {
 		void phyOnTcpData(PhySocket *sock,void **uptr,void *data,unsigned long len);
 
 		void handleRead(PhySocket *sock,void **uptr,bool lwip_invoked);
-		void phyOnTcpWritable(PhySocket *sock,void **uptr, bool lwip_invoked);
+		void phyOnTcpWritable(PhySocket *sock,void **uptr);
 
 		/*
 	 	 * Signals us to close the TcpConnection associated with this PhySocket

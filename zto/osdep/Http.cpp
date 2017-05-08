@@ -110,7 +110,7 @@ struct HttpPhyHandler
 			phy->close(sock);
 	}
 
-	inline void phyOnTcpWritable(PhySocket *sock,void **uptr, bool stack_invoked)
+	inline void phyOnTcpWritable(PhySocket *sock,void **uptr)
 	{
 		if (writePtr < (unsigned long)writeBuf.length()) {
 			long n = phy->streamSend(sock,writeBuf.data() + writePtr,(unsigned long)writeBuf.length() - writePtr,true);

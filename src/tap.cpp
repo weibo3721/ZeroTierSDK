@@ -165,6 +165,11 @@ NetconEthernetTap::~NetconEthernetTap()
 	#endif
 }
 
+void NetconEthernetTap::setMtu(unsigned int mtu)
+{
+	_mtu = mtu;
+}
+
 void NetconEthernetTap::setEnabled(bool en)
 {
 	_enabled = en;
