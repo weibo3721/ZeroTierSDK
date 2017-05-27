@@ -42,11 +42,11 @@
 #include <sys/types.h>
 #include <pthread.h>
 
-#include "OneService.hpp"
-#include "Utils.hpp"
-#include "OSUtils.hpp"
-#include "InetAddress.hpp"
-#include "ZeroTierOne.h"
+#include "service/OneService.hpp"
+#include "node/Utils.hpp"
+#include "osdep/OSUtils.hpp"
+#include "node/InetAddress.hpp"
+#include "include/ZeroTierOne.h"
 
 #include "tap.hpp"
 #include "sdk.h"

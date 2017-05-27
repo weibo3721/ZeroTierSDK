@@ -62,7 +62,6 @@
 		7C7F16671DBEB7AB00C7AFFD /* Http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CEAF4FD1DBAC841006585E7 /* Http.cpp */; };
 		7C7F16681DBEB7AB00C7AFFD /* OSUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CEAF4FF1DBAC841006585E7 /* OSUtils.cpp */; };
 		7C7F16691DBEB7AB00C7AFFD /* PortMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CEAF5021DBAC841006585E7 /* PortMapper.cpp */; };
-		7C7F166B1DBEB7AB00C7AFFD /* ControlPlane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CEAF4F11DBAC80C006585E7 /* ControlPlane.cpp */; };
 		7C7F166C1DBEB88700C7AFFD /* tcp_in.c in Sources */ = {isa = PBXBuildFile; fileRef = 7CEAF5901DBADA69006585E7 /* tcp_in.c */; };
 		7C7F166D1DBEB88700C7AFFD /* tcp_out.c in Sources */ = {isa = PBXBuildFile; fileRef = 7CEAF5911DBADA69006585E7 /* tcp_out.c */; };
 		7C7F166E1DBEB88700C7AFFD /* tcp.c in Sources */ = {isa = PBXBuildFile; fileRef = 7CEAF5921DBADA69006585E7 /* tcp.c */; };
@@ -1078,7 +1077,6 @@
 				7C7F16671DBEB7AB00C7AFFD /* Http.cpp in Sources */,
 				7C7F16681DBEB7AB00C7AFFD /* OSUtils.cpp in Sources */,
 				7C7F16691DBEB7AB00C7AFFD /* PortMapper.cpp in Sources */,
-				7C7F166B1DBEB7AB00C7AFFD /* ControlPlane.cpp in Sources */,
 				7C7F16471DBEB76F00C7AFFD /* intercept.c in Sources */,
 				7C7F16481DBEB76F00C7AFFD /* proxy.cpp in Sources */,
 				7C7F16491DBEB76F00C7AFFD /* rpc.c in Sources */,
@@ -1405,6 +1403,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-DSDK_DEBUG",
 					"-DSDK",
@@ -1421,6 +1420,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -1463,6 +1463,7 @@
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
 		};

@@ -306,6 +306,7 @@ static int SclusterGeoIpFunction(void *uptr,const struct sockaddr_storage *addr,
 #endif
 
 static void StapFrameHandler(void *uptr,uint64_t nwid,const MAC &from,const MAC &to,unsigned int etherType,unsigned int vlanId,const void *data,unsigned int len);
+static void StapFrameHandler2(void * test,void *uptr,uint64_t nwid,const MAC &from,const MAC &to,unsigned int etherType,unsigned int vlanId,const void *data,unsigned int len);
 
 static int ShttpOnMessageBegin(http_parser *parser);
 static int ShttpOnUrl(http_parser *parser,const char *ptr,size_t length);
@@ -985,7 +986,7 @@ public:
 		_run_m.unlock();
 		_phy.whack();
 	}
-
+#define ZT_SDK
 #ifdef ZT_SDK
     virtual void leave(const char *hp)
     {
@@ -1951,14 +1952,15 @@ public:
 					try {
 						char friendlyName[128];
 						Utils::snprintf(friendlyName,sizeof(friendlyName),"ZeroTier One [%.16llx]",nwid);
+                        
 						n.tap = new EthernetTap(
 							_homePath.c_str(),
 							MAC(nwc->mac),
-							nwc->mtu,
+							(unsigned int)nwc->mtu,
 							(unsigned int)ZT_IF_METRIC,
-							nwid,
+							(uint64_t)nwid,
 							friendlyName,
-							StapFrameHandler,
+							StapFrameHandler2,
 							(void *)this);
 						*nuptr = (void *)&n;
 

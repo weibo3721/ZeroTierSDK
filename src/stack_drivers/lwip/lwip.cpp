@@ -851,7 +851,7 @@ namespace ZeroTier
         src_mac.setTo(ethhdr->src.addr, 6);
         dest_mac.setTo(ethhdr->dest.addr, 6);
 
-        tap->_handler(tap->_arg,tap->_nwid,src_mac,dest_mac,
+        tap->_handler(tap->_arg,tap->_arg,tap->_nwid,src_mac,dest_mac,
             Utils::ntoh((uint16_t)ethhdr->type),0,buf + sizeof(struct eth_hdr),totalLength - sizeof(struct eth_hdr));
         return ERR_OK;
     }

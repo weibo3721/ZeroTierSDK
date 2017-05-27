@@ -335,7 +335,7 @@ namespace ZeroTier {
 		void phyOnTcpData(PhySocket *sock,void **uptr,void *data,unsigned long len);
 
 		void handleRead(PhySocket *sock,void **uptr,bool lwip_invoked);
-		void phyOnTcpWritable(PhySocket *sock,void **uptr);
+		void phyOnTcpWritable(PhySocket *sock,void **uptr, bool stack_invoked);
 
 		/*
 	 	 * Signals us to close the TcpConnection associated with this PhySocket
