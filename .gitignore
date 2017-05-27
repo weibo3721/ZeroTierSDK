@@ -22,7 +22,7 @@ integrations/Unity3D/Plugins
 *.tmp
 
 # ZeroTierOne source
-zerotierone
+# zerotierone
 
 # Other
 .depend
