@@ -882,7 +882,7 @@
 					};
 					7CC003221D1216E3003E68DC = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = 8ZD9JUCZ4V;
+						DevelopmentTeam = 6RYT2JLNN4;
 					};
 					7CC0032F1D1216F8003E68DC = {
 						CreatedOnToolsVersion = 7.3;
@@ -1389,6 +1389,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 6RYT2JLNN4;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1429,6 +1430,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 6RYT2JLNN4;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
